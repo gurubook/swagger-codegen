@@ -1174,6 +1174,14 @@
         "name": "User"
       }
     },
+    "Gender": {	
+	"type": "string",
+	"description": "The gender",
+	"enum": [
+		"MALE", 
+		"FEMALE"
+	]
+    },	
     "Category": {
       "properties": {
         "id": {

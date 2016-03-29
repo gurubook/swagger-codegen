@@ -1,0 +1,17 @@
+public enum {{{classname}}} {
+  {{#allowableValues}}@SerializedName("{{{.}}}")
+  {{{.}}}("{{{.}}}"){{^-last}},
+
+  {{/-last}}{{#-last}};{{/-last}}{{/allowableValues}}
+
+  private String value;
+
+  {{{classname}}}(String value) {
+    this.value = value;
+  }
+
+  @Override
+  public String toString() {
+    return value;
+  }
+}
