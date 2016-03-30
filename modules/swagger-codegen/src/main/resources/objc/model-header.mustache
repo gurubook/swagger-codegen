@@ -12,18 +12,7 @@
 {{newline}}
 {{#models}}
 {{#model}}
-
-@protocol {{classname}}
-@end
-
-@interface {{classname}} : {{#parent}}{{{parent}}}{{/parent}}{{^parent}}{{classPrefix}}Object{{/parent}}
-
-{{#vars}}
-{{#description}}/* {{{description}}} {{^required}}[optional]{{/required}}
- */{{/description}}
-@property(nonatomic) {{{ datatype }}} {{name}};
-{{/vars}}
-
-@end
+{{#isEnum}}{{>enum-typedef}}{{/isEnum}}
+{{^isEnum}}{{>pojo-header}}{{/isEnum}}
 {{/model}}
 {{/models}}

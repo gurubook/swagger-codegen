@@ -1,5 +1,5 @@
 {{#models}}
-{{#model}}
+{{#model}}{{^isEnum}}
 #import "{{classname}}.h"
 
 @implementation {{classname}}
@@ -75,6 +75,6 @@
     return [[self toDictionary] description];
 }
 
-{{/model}}
 @end
+{{/isEnum}}{{/model}}
 {{/models}}
