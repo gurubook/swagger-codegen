@@ -8,6 +8,7 @@
  */
 
 #import "SWGCategory.h"
+#import "SWGGender.h"
 #import "SWGTag.h"
 
 
@@ -17,17 +18,26 @@
 @interface SWGPet : SWGObject
 
 
+
 @property(nonatomic) NSNumber* _id;
+
+@property(assign, nonatomic) SWGGender gender;
+
+
 
 @property(nonatomic) SWGCategory* category;
 
+
 @property(nonatomic) NSString* name;
 
+
 @property(nonatomic) NSArray* /* NSString */ photoUrls;
+
 
 @property(nonatomic) NSArray<SWGTag>* tags;
 /* pet status in the store [optional]
  */
-@property(nonatomic) NSString* status;
+@property(assign, nonatomic) NSString status;
+
 
 @end

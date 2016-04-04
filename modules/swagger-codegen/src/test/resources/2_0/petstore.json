@@ -1206,6 +1206,9 @@
           "type": "integer",
           "format": "int64"
         },
+        "gender": {
+        	"$ref": "#/definitions/Gender"
+        },
         "category": {
           "$ref": "#/definitions/Category"
         },

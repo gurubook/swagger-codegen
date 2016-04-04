@@ -8,17 +8,7 @@
  */
 
 
+typedef NS_ENUM(NSInteger, SWGGender) {
+  MALE, FEMALE
+};
 
-@protocol SWGName
-@end
-
-@interface SWGName : SWGObject
-
-
-
-@property(nonatomic) NSNumber* name;
-
-
-@property(nonatomic) NSNumber* snakeCase;
-
-@end

@@ -1,7 +1,7 @@
 
-#import "SWGSpecialModelName_.h"
+#import "SWGCat.h"
 
-@implementation SWGSpecialModelName_
+@implementation SWGCat
 
 - (instancetype)init {
   self = [super init];
@@ -21,7 +21,7 @@
  */
 + (JSONKeyMapper *)keyMapper
 {
-  return [[JSONKeyMapper alloc] initWithDictionary:@{ @"$special[property.name]": @"specialPropertyName" }];
+  return [[JSONKeyMapper alloc] initWithDictionary:@{ @"className": @"className", @"declawed": @"declawed" }];
 }
 
 /**
@@ -31,7 +31,7 @@
  */
 + (BOOL)propertyIsOptional:(NSString *)propertyName
 {
-  NSArray *optionalProperties = @[@"specialPropertyName"];
+  NSArray *optionalProperties = @[@"declawed"];
 
   if ([optionalProperties containsObject:propertyName]) {
     return YES;
@@ -49,6 +49,7 @@
     return [[self toDictionary] description];
 }
 
+	
 	
 
 @end

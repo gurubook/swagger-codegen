@@ -15,6 +15,7 @@
 @interface SWGReturn : SWGObject
 
 
+
 @property(nonatomic) NSNumber* _return;
 
 @end

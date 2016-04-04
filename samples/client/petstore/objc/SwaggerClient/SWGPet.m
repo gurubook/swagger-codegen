@@ -1,3 +1,4 @@
+
 #import "SWGPet.h"
 
 @implementation SWGPet
@@ -6,7 +7,7 @@
   self = [super init];
 
   if (self) {
-    // initalise property's default value, if any
+    // initialize property's default value, if any
     
   }
 
@@ -20,7 +21,7 @@
  */
 + (JSONKeyMapper *)keyMapper
 {
-  return [[JSONKeyMapper alloc] initWithDictionary:@{ @"id": @"_id", @"category": @"category", @"name": @"name", @"photoUrls": @"photoUrls", @"tags": @"tags", @"status": @"status" }];
+  return [[JSONKeyMapper alloc] initWithDictionary:@{ @"id": @"_id", @"gender": @"gender", @"category": @"category", @"name": @"name", @"photoUrls": @"photoUrls", @"tags": @"tags", @"status": @"status" }];
 }
 
 /**
@@ -30,7 +31,7 @@
  */
 + (BOOL)propertyIsOptional:(NSString *)propertyName
 {
-  NSArray *optionalProperties = @[@"_id", @"category", @"tags", @"status"];
+  NSArray *optionalProperties = @[@"_id", @"gender", @"category", @"tags", @"status"];
 
   if ([optionalProperties containsObject:propertyName]) {
     return YES;
@@ -48,4 +49,37 @@
     return [[self toDictionary] description];
 }
 
+	
+		
+- (void)setGenderWithNSString:(NSString *)value
+{
+    NSArray *genderArray = @[@"MALE", @"FEMALE"];
+    _gender  = [genderArray indexOfObject:value];
+    
+}
+-(id)JSONObjectForGender
+{
+    NSArray *genderArray = @[@"MALE", @"FEMALE"];
+    return [genderArray objectAtIndex:_gender];
+}			
+	
+	
+	
+	
+	
+		
+- (void)setStatusEnumWithNSString:(NSString *)value
+{
+    NSArray *statusArray = @[@"available", @"pending", @"sold"];
+    _status  = [statusArray indexOfObject:value];
+    
+}
+-(id)JSONObjectForStatusEnum
+{
+    NSArray *statusArray = @[@"available", @"pending", @"sold"];
+    return [statusArray objectAtIndex:_status];
+}			
+	
+
 @end
+

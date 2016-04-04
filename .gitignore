@@ -96,3 +96,6 @@ samples/client/petstore/python/swagger_client.egg-info/SOURCES.txt
 samples/client/petstore/python/.coverage
 samples/client/petstore/python/.projectile
 samples/client/petstore/python/.venv/
+.factorypath
+modules/swagger-codegen/test-output
+

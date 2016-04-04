@@ -1,7 +1,7 @@
 
-#import "SWGSpecialModelName_.h"
+#import "SWGAnimal.h"
 
-@implementation SWGSpecialModelName_
+@implementation SWGAnimal
 
 - (instancetype)init {
   self = [super init];
@@ -14,6 +14,28 @@
   return self;
 }
 
+/**
+ Maps "discriminator" value to the sub-class name, so that inheritance is supported.
+ */
+- (id)initWithDictionary:(NSDictionary *)dict error:(NSError *__autoreleasing *)err {
+
+
+    NSString * discriminatedClassName = [dict valueForKey:@"className"];
+
+    if(discriminatedClassName == nil ){
+         return [super initWithDictionary:dict error:err];
+    }
+
+    Class class = NSClassFromString([@"SWG" stringByAppendingString:discriminatedClassName]);
+
+    if([self class ] == class) {
+        return [super initWithDictionary:dict error:err];
+    }
+
+
+    return [[class alloc] initWithDictionary:dict error: err];
+
+}
 
 /**
  * Maps json key to property name.
@@ -21,7 +43,7 @@
  */
 + (JSONKeyMapper *)keyMapper
 {
-  return [[JSONKeyMapper alloc] initWithDictionary:@{ @"$special[property.name]": @"specialPropertyName" }];
+  return [[JSONKeyMapper alloc] initWithDictionary:@{ @"className": @"className" }];
 }
 
 /**
@@ -31,7 +53,7 @@
  */
 + (BOOL)propertyIsOptional:(NSString *)propertyName
 {
-  NSArray *optionalProperties = @[@"specialPropertyName"];
+  NSArray *optionalProperties = @[];
 
   if ([optionalProperties containsObject:propertyName]) {
     return YES;

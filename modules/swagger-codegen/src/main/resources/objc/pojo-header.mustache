@@ -6,7 +6,8 @@
 {{#vars}}
 {{#description}}/* {{{description}}} {{^required}}[optional]{{/required}}
  */{{/description}}
-@property(nonatomic) {{{ datatype }}} {{name}};
+{{#isEnum}}@property(assign, nonatomic) {{{ baseType }}} {{name}};{{/isEnum}}
+{{^isEnum}}@property(nonatomic) {{{ datatype }}} {{name}};{{/isEnum}}
 {{/vars}}
 
 @end

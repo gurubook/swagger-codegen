@@ -9,16 +9,13 @@
 
 
 
-@protocol SWGName
+@protocol SWGAnimal
 @end
 
-@interface SWGName : SWGObject
+@interface SWGAnimal : SWGObject
 
 
 
-@property(nonatomic) NSNumber* name;
-
-
-@property(nonatomic) NSNumber* snakeCase;
+@property(nonatomic) NSString* className;
 
 @end

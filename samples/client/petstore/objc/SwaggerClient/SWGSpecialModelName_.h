@@ -15,6 +15,7 @@
 @interface SWGSpecialModelName_ : SWGObject
 
 
+
 @property(nonatomic) NSNumber* specialPropertyName;
 
 @end

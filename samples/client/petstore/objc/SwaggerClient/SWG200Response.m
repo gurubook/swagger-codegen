@@ -1,3 +1,4 @@
+
 #import "SWG200Response.h"
 
 @implementation SWG200Response
@@ -6,7 +7,7 @@
   self = [super init];
 
   if (self) {
-    // initalise property's default value, if any
+    // initialize property's default value, if any
     
   }
 
@@ -48,4 +49,7 @@
     return [[self toDictionary] description];
 }
 
+	
+
 @end
+

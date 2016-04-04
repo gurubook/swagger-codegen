@@ -75,6 +75,22 @@
     return [[self toDictionary] description];
 }
 
+{{#vars}}
+	{{#isEnum}}	
+- (void)set{{datatypeWithEnum}}WithNSString:(NSString *)value
+{
+    NSArray *{{name}}Array = @[{{#_enum}}@"{{this}}"{{^-last}}, {{/-last}}{{/_enum}}];
+    _{{name}}  = [{{name}}Array indexOfObject:value];
+    
+}
+-(id)JSONObjectFor{{datatypeWithEnum}}
+{
+    NSArray *{{name}}Array = @[{{#_enum}}@"{{this}}"{{^-last}}, {{/-last}}{{/_enum}}];
+    return [{{name}}Array objectAtIndex:_{{name}}];
+}			
+	{{/isEnum}}
+{{/vars}}
+
 @end
 {{/isEnum}}{{/model}}
 {{/models}}

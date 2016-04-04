@@ -314,8 +314,8 @@ public class SwiftCodegen extends DefaultCodegen implements CodegenConfig {
     }
 
     @Override
-    public CodegenProperty fromProperty(String name, Property p) {
-        CodegenProperty codegenProperty = super.fromProperty(name, p);
+    public CodegenProperty fromProperty(String name, Property p, Map<String, Model> allDefinitions) {
+        CodegenProperty codegenProperty = super.fromProperty(name, p, allDefinitions);
         if (codegenProperty.isEnum) {
             List<Map<String, String>> swiftEnums = new ArrayList<Map<String, String>>();
             List<String> values = (List<String>) codegenProperty.allowableValues.get("values");

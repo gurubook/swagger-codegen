@@ -1,3 +1,4 @@
+
 #import "SWGInlineResponse200.h"
 
 @implementation SWGInlineResponse200
@@ -6,7 +7,7 @@
   self = [super init];
 
   if (self) {
-    // initalise property's default value, if any
+    // initialize property's default value, if any
     
   }
 
@@ -48,4 +49,24 @@
     return [[self toDictionary] description];
 }
 
+	
+	
+	
+		
+- (void)setStatusEnumWithNSString:(NSString *)value
+{
+    NSArray *statusArray = @[@"available", @"pending", @"sold"];
+    _status  = [statusArray indexOfObject:value];
+    
+}
+-(id)JSONObjectForStatusEnum
+{
+    NSArray *statusArray = @[@"available", @"pending", @"sold"];
+    return [statusArray objectAtIndex:_status];
+}			
+	
+	
+	
+
 @end
+

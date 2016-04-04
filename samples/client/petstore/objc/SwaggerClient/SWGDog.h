@@ -7,18 +7,19 @@
  * Do not edit the class manually.
  */
 
+#import "SWGAnimal.h"
 
 
-@protocol SWGName
+@protocol SWGDog
 @end
 
-@interface SWGName : SWGObject
+@interface SWGDog : SWGAnimal
 
 
 
-@property(nonatomic) NSNumber* name;
+@property(nonatomic) NSString* className;
 
 
-@property(nonatomic) NSNumber* snakeCase;
+@property(nonatomic) NSString* breed;
 
 @end

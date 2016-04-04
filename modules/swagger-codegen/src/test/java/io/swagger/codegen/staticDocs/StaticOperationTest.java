@@ -17,7 +17,7 @@ public class StaticOperationTest {
     public void stringParameterTest() {
         final StringProperty property = new StringProperty();
         final DefaultCodegen codegen = new StaticDocCodegen();
-        final CodegenProperty cp = codegen.fromProperty("property", property);
+        final CodegenProperty cp = codegen.fromProperty("property", property, null);
 
         Assert.assertEquals(cp.baseName, "property");
         Assert.assertEquals(cp.datatype, "String");
@@ -30,7 +30,7 @@ public class StaticOperationTest {
     public void complexParameterTest() {
         final RefProperty property = new RefProperty("Children");
         final DefaultCodegen codegen = new StaticDocCodegen();
-        final CodegenProperty cp = codegen.fromProperty("property", property);
+        final CodegenProperty cp = codegen.fromProperty("property", property, null);
 
         Assert.assertEquals(cp.baseName, "property");
         Assert.assertEquals(cp.complexType, "Children");
@@ -47,7 +47,7 @@ public class StaticOperationTest {
     public void listParameterTest() {
         final ArrayProperty property = new ArrayProperty().items(new RefProperty("Children"));
         final DefaultCodegen codegen = new StaticDocCodegen();
-        final CodegenProperty cp = codegen.fromProperty("property", property);
+        final CodegenProperty cp = codegen.fromProperty("property", property, null);
 
         Assert.assertEquals(cp.baseName, "property");
         Assert.assertEquals(cp.complexType, "Children");

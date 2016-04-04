@@ -25,27 +25,39 @@ import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
 import io.swagger.models.parameters.QueryParameter;
 import io.swagger.models.parameters.SerializableParameter;
-import io.swagger.models.properties.*;
+import io.swagger.models.properties.AbstractNumericProperty;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.BinaryProperty;
+import io.swagger.models.properties.BooleanProperty;
+import io.swagger.models.properties.ByteArrayProperty;
+import io.swagger.models.properties.DateProperty;
+import io.swagger.models.properties.DateTimeProperty;
+import io.swagger.models.properties.DecimalProperty;
+import io.swagger.models.properties.DoubleProperty;
+import io.swagger.models.properties.FloatProperty;
+import io.swagger.models.properties.IntegerProperty;
+import io.swagger.models.properties.LongProperty;
+import io.swagger.models.properties.MapProperty;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.PropertyBuilder;
 import io.swagger.models.properties.PropertyBuilder.PropertyId;
+import io.swagger.models.properties.RefProperty;
+import io.swagger.models.properties.StringProperty;
+import io.swagger.models.properties.UUIDProperty;
 import io.swagger.util.Json;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -53,6 +65,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
 
 
 public class DefaultCodegen {
@@ -491,6 +505,18 @@ public class DefaultCodegen {
         return StringUtils.capitalize(property.name) + "Enum";
     }
 
+    /**
+     * Return the Enum name (e.g. StatusEnum given 'status')
+     *
+     * @param property Codegen property object
+     * @return the Enum name
+     */
+    @SuppressWarnings("static-method")
+    public String toExternalEnumName(CodegenProperty property) {
+        return StringUtils.capitalize(property.name);
+    }
+
+    
     /**
      * Return the escaped name of the reserved word
      *
@@ -1034,7 +1060,7 @@ public class DefaultCodegen {
                     addProperties(allProperties, allRequired, child, allDefinitions);
                 }
             }
-            addVars(m, properties, required, allProperties, allRequired);
+            addVars(m, properties, required, allProperties, allRequired, allDefinitions);
         } else {
             ModelImpl impl = (ModelImpl) model;
             if(impl.getEnum() != null && impl.getEnum().size() > 0) {
@@ -1047,7 +1073,7 @@ public class DefaultCodegen {
                 MapProperty mapProperty = new MapProperty(impl.getAdditionalProperties());
                 addParentContainer(m, name, mapProperty);
             }
-            addVars(m, impl.getProperties(), impl.getRequired());
+            addVars(m, impl.getProperties(), impl.getRequired(), allDefinitions);
         }
 
         if (m.vars != null) {
@@ -1102,7 +1128,7 @@ public class DefaultCodegen {
      * @param p Swagger property object
      * @return Codegen Property object
      */
-    public CodegenProperty fromProperty(String name, Property p) {
+    public CodegenProperty fromProperty(String name, Property p, Map<String, Model> allDefinitions) {
         if (p == null) {
             LOGGER.error("unexpected missing property for name " + name);
             return null;
@@ -1281,6 +1307,29 @@ public class DefaultCodegen {
                 property.allowableValues = allowableValues;
             }
         }
+
+        // $ref to ENUM
+        if (p instanceof RefProperty && allDefinitions != null) {
+        	RefProperty rp = (RefProperty) p;
+        	Model targetModel = allDefinitions.get(rp.getSimpleRef());
+        	if (targetModel instanceof ModelImpl) {
+        		ModelImpl targetModelImpl = (ModelImpl)targetModel;
+        		if (targetModelImpl.getEnum() != null) {
+                    List<String> _enum = targetModelImpl.getEnum();
+                    property._enum = new ArrayList<String>();
+                    for(String i : _enum) {
+                      property._enum.add(i.toString());
+                    }
+                    property.isEnum = true;
+
+                    // legacy support
+                    Map<String, Object> allowableValues = new HashMap<String, Object>();
+                    allowableValues.put("values", _enum);
+                    property.allowableValues = allowableValues;
+        		}
+        	}	
+        }
+        
         property.datatype = getTypeDeclaration(p);
 
         // this can cause issues for clients which don't support enums
@@ -1297,7 +1346,7 @@ public class DefaultCodegen {
         		property.isListContainer = true;
         		property.containerType = "array";
         		ArrayProperty ap = (ArrayProperty) p;
-        		CodegenProperty cp = fromProperty(property.name, ap.getItems());
+        		CodegenProperty cp = fromProperty(property.name, ap.getItems(), null);
         		if (cp == null) {
         			LOGGER.warn("skipping invalid property " + Json.pretty(p));
         		} else {
@@ -1320,7 +1369,7 @@ public class DefaultCodegen {
             property.isMapContainer = true;
             property.containerType = "map";
             MapProperty ap = (MapProperty) p;
-            CodegenProperty cp = fromProperty("inner", ap.getAdditionalProperties());
+            CodegenProperty cp = fromProperty("inner", ap.getAdditionalProperties(), allDefinitions);
             property.items = cp;
 
             property.baseType = getSwaggerType(p);
@@ -1329,6 +1378,11 @@ public class DefaultCodegen {
             } else {
                 property.isPrimitiveType = true;
             }
+      	} else if (p instanceof RefProperty) {
+      		if (property.isEnum) {
+      			property.datatypeWithEnum = toExternalEnumName(property);
+      		}
+      		setNonArrayMapProperty(property, type);
         } else {
             setNonArrayMapProperty(property, type);
         }
@@ -1491,13 +1545,13 @@ public class DefaultCodegen {
 
             if (methodResponse != null) {
                 if (methodResponse.getSchema() != null) {
-                    CodegenProperty cm = fromProperty("response", methodResponse.getSchema());
+                    CodegenProperty cm = fromProperty("response", methodResponse.getSchema(), null);
 
                     Property responseProperty = methodResponse.getSchema();
 
                     if (responseProperty instanceof ArrayProperty) {
                         ArrayProperty ap = (ArrayProperty) responseProperty;
-                        CodegenProperty innerProperty = fromProperty("response", ap.getItems());
+                        CodegenProperty innerProperty = fromProperty("response", ap.getItems(), null);
                         op.returnBaseType = innerProperty.baseType;
                     } else {
                         if (cm.complexType != null) {
@@ -1675,11 +1729,11 @@ public class DefaultCodegen {
         if (r.schema != null) {
             Property responseProperty = response.getSchema();
             responseProperty.setRequired(true);
-            CodegenProperty cm = fromProperty("response", responseProperty);
+            CodegenProperty cm = fromProperty("response", responseProperty, null);
 
             if (responseProperty instanceof ArrayProperty) {
                 ArrayProperty ap = (ArrayProperty) responseProperty;
-                CodegenProperty innerProperty = fromProperty("response", ap.getItems());
+                CodegenProperty innerProperty = fromProperty("response", ap.getItems(), null);
                 r.baseType = innerProperty.baseType;
             } else {
                 if (cm.complexType != null) {
@@ -1759,7 +1813,7 @@ public class DefaultCodegen {
                 if (collectionFormat == null) {
                     collectionFormat = "csv";
                 }
-                CodegenProperty pr = fromProperty("inner", inner);
+                CodegenProperty pr = fromProperty("inner", inner, null);
                 p.baseType = pr.datatype;
                 p.isContainer = true;
                 p.isListContainer = true;
@@ -1772,7 +1826,7 @@ public class DefaultCodegen {
                 }
                 property = new MapProperty(inner);
                 collectionFormat = qp.getCollectionFormat();
-                CodegenProperty pr = fromProperty("inner", inner);
+                CodegenProperty pr = fromProperty("inner", inner, null);
                 p.baseType = pr.datatype;
                 p.isContainer = true;
                 p.isMapContainer = true;
@@ -1789,7 +1843,7 @@ public class DefaultCodegen {
                 property = new StringProperty().description("//TODO automatically added by swagger-codegen.  Type was " + type + " but not supported");
             }
             property.setRequired(param.getRequired());
-            CodegenProperty model = fromProperty(qp.getName(), property);
+            CodegenProperty model = fromProperty(qp.getName(), property, null);
 
             // set boolean flag (e.g. isString)
             setParameterBooleanFlagWithCodegenProperty(p, model);
@@ -1846,7 +1900,7 @@ public class DefaultCodegen {
                 } else {
                     Property prop = PropertyBuilder.build(impl.getType(), impl.getFormat(), null);
                     prop.setRequired(bp.getRequired());
-                    CodegenProperty cp = fromProperty("property", prop);
+                    CodegenProperty cp = fromProperty("property", prop, null);
                     if (cp != null) {
                         p.baseType = cp.baseType;
                         p.dataType = cp.datatype;
@@ -1864,7 +1918,7 @@ public class DefaultCodegen {
                 // get the single property
                 ArrayProperty ap = new ArrayProperty().items(impl.getItems());
                 ap.setRequired(param.getRequired());
-                CodegenProperty cp = fromProperty("inner", ap);
+                CodegenProperty cp = fromProperty("inner", ap, null);
                 if (cp.complexType != null) {
                     imports.add(cp.complexType);
                 }
@@ -2080,7 +2134,7 @@ public class DefaultCodegen {
     private void addHeaders(Response response, List<CodegenProperty> target) {
         if (response.getHeaders() != null) {
             for (Map.Entry<String, Property> headers : response.getHeaders().entrySet()) {
-                target.add(fromProperty(headers.getKey(), headers.getValue()));
+                target.add(fromProperty(headers.getKey(), headers.getValue(), null));
             }
         }
     }
@@ -2149,7 +2203,7 @@ public class DefaultCodegen {
     }
 
     private void addParentContainer(CodegenModel m, String name, Property property) {
-        final CodegenProperty tmp = fromProperty(name, property);
+        final CodegenProperty tmp = fromProperty(name, property, null);
         addImport(m, tmp.complexType);
         m.parent = toInstantiationType(property);
         final String containerType = tmp.containerType;
@@ -2226,12 +2280,12 @@ public class DefaultCodegen {
         }
     }
 
-    private void addVars(CodegenModel m, Map<String, Property> properties, List<String> required) {
-        addVars(m, properties, required, null, null);
+    private void addVars(CodegenModel m, Map<String, Property> properties, List<String> required, Map<String, Model> allDefinitions) {
+        addVars(m, properties, required, null, null, allDefinitions);
     }
 
     private void addVars(CodegenModel m, Map<String, Property> properties, List<String> required,
-            Map<String, Property> allProperties, List<String> allRequired) {
+            Map<String, Property> allProperties, List<String> allRequired, Map<String, Model> allDefinitions) {
 
         if (properties != null && !properties.isEmpty()) {
             m.hasVars = true;
@@ -2240,7 +2294,7 @@ public class DefaultCodegen {
 
             Set<String> mandatory = required == null ? Collections.<String> emptySet()
                     : new TreeSet<String>(required);
-            addVars(m, m.vars, properties, mandatory);
+            addVars(m, m.vars, properties, mandatory, allDefinitions);
             m.allMandatory = m.mandatory = mandatory;
         } else {
             m.emptyVars = true;
@@ -2251,12 +2305,12 @@ public class DefaultCodegen {
         if (allProperties != null) {
             Set<String> allMandatory = allRequired == null ? Collections.<String> emptySet()
                     : new TreeSet<String>(allRequired);
-            addVars(m, m.allVars, allProperties, allMandatory);
+            addVars(m, m.allVars, allProperties, allMandatory, allDefinitions);
             m.allMandatory = allMandatory;
         }
     }
 
-    private void addVars(CodegenModel m, List<CodegenProperty> vars, Map<String, Property> properties, Set<String> mandatory) {
+    private void addVars(CodegenModel m, List<CodegenProperty> vars, Map<String, Property> properties, Set<String> mandatory, Map<String, Model> allDefinitions) {
         final int totalCount = properties.size();
         int count = 0;
         for (Map.Entry<String, Property> entry : properties.entrySet()) {
@@ -2266,7 +2320,7 @@ public class DefaultCodegen {
             if (prop == null) {
                 LOGGER.warn("null property for " + key);
             } else {
-                final CodegenProperty cp = fromProperty(key, prop);
+                final CodegenProperty cp = fromProperty(key, prop, allDefinitions);
                 cp.required = mandatory.contains(key) ? true : null;
                 if (cp.isEnum) {
                     // FIXME: if supporting inheritance, when called a second time for allProperties it is possible for

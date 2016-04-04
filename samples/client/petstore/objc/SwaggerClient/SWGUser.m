@@ -1,3 +1,4 @@
+
 #import "SWGUser.h"
 
 @implementation SWGUser
@@ -6,7 +7,7 @@
   self = [super init];
 
   if (self) {
-    // initalise property's default value, if any
+    // initialize property's default value, if any
     
   }
 
@@ -48,4 +49,14 @@
     return [[self toDictionary] description];
 }
 
+	
+	
+	
+	
+	
+	
+	
+	
+
 @end
+

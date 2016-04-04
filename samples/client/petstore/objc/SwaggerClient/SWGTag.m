@@ -1,3 +1,4 @@
+
 #import "SWGTag.h"
 
 @implementation SWGTag
@@ -6,7 +7,7 @@
   self = [super init];
 
   if (self) {
-    // initalise property's default value, if any
+    // initialize property's default value, if any
     
   }
 
@@ -48,4 +49,8 @@
     return [[self toDictionary] description];
 }
 
+	
+	
+
 @end
+

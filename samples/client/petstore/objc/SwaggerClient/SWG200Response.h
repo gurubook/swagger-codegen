@@ -15,6 +15,7 @@
 @interface SWG200Response : SWGObject
 
 
+
 @property(nonatomic) NSNumber* name;
 
 @end
