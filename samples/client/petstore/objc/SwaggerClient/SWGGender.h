@@ -9,6 +9,6 @@
 
 
 typedef NS_ENUM(NSInteger, SWGGender) {
-  MALE, FEMALE
+  SWGGender_MALE, SWGGender_FEMALE
 };
 

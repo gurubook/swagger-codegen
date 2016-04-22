@@ -21,7 +21,7 @@
  */
 + (JSONKeyMapper *)keyMapper
 {
-  return [[JSONKeyMapper alloc] initWithDictionary:@{ @"tags": @"tags", @"id": @"_id", @"category": @"category", @"status": @"status", @"name": @"name", @"photoUrls": @"photoUrls" }];
+  return [[JSONKeyMapper alloc] initWithDictionary:@{ @"photoUrls": @"photoUrls", @"name": @"name", @"id": @"_id", @"category": @"category", @"tags": @"tags", @"status": @"status" }];
 }
 
 /**
@@ -31,7 +31,7 @@
  */
 + (BOOL)propertyIsOptional:(NSString *)propertyName
 {
-  NSArray *optionalProperties = @[@"tags", @"category", @"status", @"name", @"photoUrls"];
+  NSArray *optionalProperties = @[@"photoUrls", @"name", @"category", @"tags", @"status"];
 
   if ([optionalProperties containsObject:propertyName]) {
     return YES;
@@ -52,6 +52,8 @@
 	
 	
 	
+	
+	
 		
 - (void)setStatusEnumWithNSString:(NSString *)value
 {
@@ -64,8 +66,6 @@
     NSArray *statusArray = @[@"available", @"pending", @"sold"];
     return [statusArray objectAtIndex:_status];
 }			
-	
-	
 	
 
 @end
