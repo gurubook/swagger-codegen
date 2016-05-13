@@ -411,7 +411,7 @@
    * @returns {Date} The parsed date object.
    */
 {{/emitJSDoc}}  exports.parseDate = function(str) {
-    return new Date(str.replace(/T/i, ' '));
+    return new Date(str.replace(/\[.*?\]/,''));
   };
 
 {{#emitJSDoc}}  /**

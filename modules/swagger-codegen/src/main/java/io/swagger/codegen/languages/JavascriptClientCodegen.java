@@ -845,7 +845,7 @@ public class JavascriptClientCodegen extends DefaultCodegen implements CodegenCo
                     continue;
                 }
 
-                // put "enumVars" map into `allowableValues", including `name` and `value`
+                /* put "enumVars" map into `allowableValues", including `name` and `value`
                 List<Map<String, String>> enumVars = new ArrayList<Map<String, String>>();
                 String commonPrefix = findCommonPrefixOfVars(values);
                 int truncateIdx = commonPrefix.length();
@@ -864,7 +864,7 @@ public class JavascriptClientCodegen extends DefaultCodegen implements CodegenCo
                     enumVar.put("value", value);
                     enumVars.add(enumVar);
                 }
-                allowableValues.put("enumVars", enumVars);
+                allowableValues.put("enumVars", enumVars);*/
             }
 
             if (supportsInheritance) {

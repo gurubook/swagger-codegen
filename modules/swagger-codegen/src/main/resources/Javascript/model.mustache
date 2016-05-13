@@ -45,15 +45,24 @@
    */
 {{/emitJSDoc}}  exports.constructFromObject = function(data, obj) {
     if (data) { {{!// TODO: support polymorphism: discriminator property on data determines class to instantiate.}}
-      obj = obj || new exports();
+{{^isEnum}}      obj = obj || new exports();
 {{#useInheritance}}{{#parent}}      {{.}}.constructFromObject(data, obj);{{/parent}}
 {{#interfaces}}      {{.}}.constructFromObject(data, obj);
 {{/interfaces}}{{/useInheritance}}{{#vars}}      if (data.hasOwnProperty('{{baseName}}')) {
         obj['{{baseName}}']{{{defaultValueWithParam}}}
       }
-{{/vars}}    }
+{{/vars}}    }{{/isEnum}}
+{{#isEnum}}{{#allowableValues}}      {{^-first}}else {{/-first}}if (data == exports.values.{{.}}){ 
+        obj = exports.values.{{.}}
+      }{{/allowableValues}}else{
+        obj = undefined;
+      } 
+    }{{/isEnum}}
     return obj;
   }
+  
+{{#isEnum}}{{>enumClass}}{{/isEnum}}
+
 {{#useInheritance}}{{#parent}}
   exports.prototype = Object.create({{parent}}.prototype);
   exports.prototype.constructor = exports;
@@ -93,8 +102,7 @@
   }
 
 {{/vars}}{{/emitModelMethods}}
-{{#vars}}{{#isEnum}}{{>enumClass}}{{/isEnum}}{{#items.isEnum}}{{#items}}
-{{>enumClass}}{{/items}}*/{{/items.isEnum}}{{/vars}}
 
   return exports;
+  
 {{/model}}{{/models}}}));
