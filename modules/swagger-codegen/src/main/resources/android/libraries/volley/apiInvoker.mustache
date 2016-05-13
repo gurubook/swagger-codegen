@@ -32,14 +32,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import {{invokerPackage}}.auth.Authentication;
-import {{invokerPackage}}.auth.ApiKeyAuth;
-import {{invokerPackage}}.auth.HttpBasicAuth;
-import {{invokerPackage}}.request.GetRequest;
-import {{invokerPackage}}.request.PostRequest;
-import {{invokerPackage}}.request.PutRequest;
-import {{invokerPackage}}.request.DeleteRequest;
-import {{invokerPackage}}.request.PatchRequest;
+import io.swagger.client.auth.Authentication;
+import io.swagger.client.auth.ApiKeyAuth;
+import io.swagger.client.auth.HttpBasicAuth;
+
+import io.swagger.client.request.Pair;
+import io.swagger.client.request.GetRequest;
+import io.swagger.client.request.PostRequest;
+import io.swagger.client.request.PutRequest;
+import io.swagger.client.request.DeleteRequest;
+import io.swagger.client.request.PatchRequest;
 
 public class ApiInvoker {
   private static ApiInvoker INSTANCE;
