@@ -1,37 +1,32 @@
 package io.swagger.codegen.languages;
 
-import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableMap;
-import io.swagger.codegen.CodegenConfig;
+
+import io.swagger.codegen.CliOption;
 import io.swagger.codegen.CodegenConstants;
-import io.swagger.codegen.CodegenType;
 import io.swagger.codegen.CodegenModel;
-import io.swagger.codegen.DefaultCodegen;
-import io.swagger.codegen.SupportingFile;
-import io.swagger.codegen.CodegenProperty;
 import io.swagger.codegen.CodegenModel;
 import io.swagger.codegen.CodegenOperation;
-import io.swagger.models.properties.*;
-import io.swagger.codegen.CliOption;
+import io.swagger.codegen.CodegenProperty;
+import io.swagger.codegen.CodegenType;
+import io.swagger.codegen.SupportingFile;
 import io.swagger.models.Model;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 public class CSharpClientCodegen extends AbstractCSharpCodegen {
     @SuppressWarnings({"unused", "hiding"})
     private static final Logger LOGGER = LoggerFactory.getLogger(CSharpClientCodegen.class);
+    private static final String PCL = "PCL";
     private static final String NET45 = "v4.5";
     private static final String NET35 = "v3.5";
     private static final String DATA_TYPE_WITH_ENUM_EXTENSION = "plainDatatypeWithEnum";
@@ -45,17 +40,16 @@ public class CSharpClientCodegen extends AbstractCSharpCodegen {
     protected String clientPackage = "IO.Swagger.Client";
     protected String localVariablePrefix = "";
 
-    protected String targetFramework = NET45;
-    protected String targetFrameworkNuget = "net45";
+    protected String targetFramework = PCL;
+    protected String targetFrameworkNuget = "portable45-net45+win8+wpa81";
     protected boolean supportsAsync = Boolean.TRUE;
-
 
     protected final Map<String, String> frameworks;
 
     public CSharpClientCodegen() {
         super();
         modelTemplateFiles.put("model.mustache", ".cs");
-        apiTemplateFiles.put("api.mustache", ".cs");
+        //apiTemplateFiles.put("api.mustache", ".cs");
 
         modelTestTemplateFiles.put("model_test.mustache", ".cs");
         apiTestTemplateFiles.put("api_test.mustache", ".cs");
@@ -89,6 +83,7 @@ public class CSharpClientCodegen extends AbstractCSharpCodegen {
         frameworks = new ImmutableMap.Builder<String, String>()
                 .put(NET35, ".NET Framework 3.5 compatible")
                 .put(NET45, ".NET Framework 4.5+ compatible")
+                .put(PCL, "portable client library windows store compatible")
                 .build();
         framework.defaultValue(this.targetFramework);
         framework.setEnum(frameworks);
@@ -156,10 +151,17 @@ public class CSharpClientCodegen extends AbstractCSharpCodegen {
             if(additionalProperties.containsKey("supportsAsync")){
                 additionalProperties.remove("supportsAsync");
             }
-        } else {
+            apiTemplateFiles.put("api.mustache", ".cs");
+        } else if (NET45.equals(this.targetFramework)){
             setTargetFrameworkNuget("net45");
             setSupportsAsync(Boolean.TRUE);
             additionalProperties.put("supportsAsync", this.supportsAsync);
+            apiTemplateFiles.put("api.mustache", ".cs");
+        } else {
+            setTargetFrameworkNuget("portable45-net45+win8+wpa81");
+            setSupportsAsync(Boolean.TRUE);
+            additionalProperties.put("supportsAsync", this.supportsAsync);
+            apiTemplateFiles.put("apiPcl.mustache", ".cs");
         }
 
         additionalProperties.put("targetFrameworkNuget", this.targetFrameworkNuget);
@@ -197,28 +199,40 @@ public class CSharpClientCodegen extends AbstractCSharpCodegen {
         binRelativePath += "vendor\\";
         additionalProperties.put("binRelativePath", binRelativePath);
 
-        supportingFiles.add(new SupportingFile("Configuration.mustache",
-                clientPackageDir, "Configuration.cs"));
-        supportingFiles.add(new SupportingFile("ApiClient.mustache",
-                clientPackageDir, "ApiClient.cs"));
-        supportingFiles.add(new SupportingFile("ApiException.mustache",
-                clientPackageDir, "ApiException.cs"));
-        supportingFiles.add(new SupportingFile("ApiResponse.mustache",
-                clientPackageDir, "ApiResponse.cs"));
-
-        supportingFiles.add(new SupportingFile("compile.mustache", "", "compile.bat"));
-        supportingFiles.add(new SupportingFile("compile-mono.sh.mustache", "", "compile-mono.sh"));
-        supportingFiles.add(new SupportingFile("packages.config.mustache", "vendor" + java.io.File.separator, "packages.config"));
-        supportingFiles.add(new SupportingFile("README.md", "", "README.md"));
-        supportingFiles.add(new SupportingFile("git_push.sh.mustache", "", "git_push.sh"));
-        supportingFiles.add(new SupportingFile("gitignore.mustache", "", ".gitignore"));
-
-
-        if (optionalAssemblyInfoFlag) {
-            supportingFiles.add(new SupportingFile("AssemblyInfo.mustache", packageFolder + File.separator + "Properties", "AssemblyInfo.cs"));
-        }
-        if (optionalProjectFileFlag) {
-            supportingFiles.add(new SupportingFile("Project.mustache", packageFolder, clientPackage + ".csproj"));
+        if (PCL.equals(targetFramework)) {
+        	 supportingFiles.add(new SupportingFile("ConfigurationPcl.mustache",
+  	                clientPackageDir, "Configuration.cs"));
+  	        supportingFiles.add(new SupportingFile("ApiClientPcl.mustache",
+  	                clientPackageDir, "ApiClient.cs"));
+  	        supportingFiles.add(new SupportingFile("ApiExceptionPcl.mustache",
+  	                clientPackageDir, "ApiException.cs"));
+  	        supportingFiles.add(new SupportingFile("ApiResponsePcl.mustache",
+  	                clientPackageDir, "ApiResponse.cs"));
+  	
+        } else {
+	        supportingFiles.add(new SupportingFile("Configuration.mustache",
+	                clientPackageDir, "Configuration.cs"));
+	        supportingFiles.add(new SupportingFile("ApiClient.mustache",
+	                clientPackageDir, "ApiClient.cs"));
+	        supportingFiles.add(new SupportingFile("ApiException.mustache",
+	                clientPackageDir, "ApiException.cs"));
+	        supportingFiles.add(new SupportingFile("ApiResponse.mustache",
+	                clientPackageDir, "ApiResponse.cs"));
+	
+	        supportingFiles.add(new SupportingFile("compile.mustache", "", "compile.bat"));
+	        supportingFiles.add(new SupportingFile("compile-mono.sh.mustache", "", "compile-mono.sh"));
+	        supportingFiles.add(new SupportingFile("packages.config.mustache", "vendor" + java.io.File.separator, "packages.config"));
+	        supportingFiles.add(new SupportingFile("README.md", "", "README.md"));
+	        supportingFiles.add(new SupportingFile("git_push.sh.mustache", "", "git_push.sh"));
+	        supportingFiles.add(new SupportingFile("gitignore.mustache", "", ".gitignore"));
+	
+	
+	        if (optionalAssemblyInfoFlag) {
+	            supportingFiles.add(new SupportingFile("AssemblyInfo.mustache", packageFolder + File.separator + "Properties", "AssemblyInfo.cs"));
+	        }
+	        if (optionalProjectFileFlag) {
+	            supportingFiles.add(new SupportingFile("Project.mustache", packageFolder, clientPackage + ".csproj"));
+	        }
         }
     }
 
@@ -335,9 +349,13 @@ public class CSharpClientCodegen extends AbstractCSharpCodegen {
                 allowableValues.put("enumVars", enumVars);
                 // handle default value for enum, e.g. available => StatusEnum.AVAILABLE
 
-                // HACK: strip ? from enum
+                // HACK: strip (eventually) '?' from enum
                 if (var.datatypeWithEnum != null) {
-                    var.vendorExtensions.put(DATA_TYPE_WITH_ENUM_EXTENSION, var.datatypeWithEnum.substring(0, var.datatypeWithEnum.length() - 1));
+                	if (var.datatypeWithEnum.charAt(var.datatypeWithEnum.length()-1) == '?') {
+                		var.vendorExtensions.put(DATA_TYPE_WITH_ENUM_EXTENSION, var.datatypeWithEnum.substring(0, var.datatypeWithEnum.length() - 1));
+                	} else {
+                		var.vendorExtensions.put(DATA_TYPE_WITH_ENUM_EXTENSION, var.datatypeWithEnum);
+                	}
                 }
                 
                 if (var.defaultValue != null) {

@@ -17,27 +17,31 @@ namespace {{packageName}}.Model
     /// {{description}}
     /// </summary>
     [DataContract]
+{{#isEnum}}
+	{{>enumOuterClass}}
+{{/isEnum}}
+
+{{^isEnum}}
     public partial class {{classname}} : {{#parent}}{{{parent}}}, {{/parent}} IEquatable<{{classname}}>
-    { {{#vars}}{{#isEnum}}
-    
-        [JsonConverter(typeof(StringEnumConverter))]
-        {{>enumClass}}{{/isEnum}}{{#items.isEnum}}{{#items}}
-        {{>enumClass}}{{/items}}{{/items.isEnum}}{{/vars}}
-    {{#vars}}{{#isEnum}}
+    {
+        
+{{#vars}}{{#isEnum}}
         /// <summary>
         /// {{^description}}Gets or Sets {{{name}}}{{/description}}{{#description}}{{{description}}}{{/description}}
         /// </summary>{{#description}}
         /// <value>{{{description}}}</value>{{/description}}
         [DataMember(Name="{{baseName}}", EmitDefaultValue={{emitDefaultValue}})]
-        public {{{datatypeWithEnum}}} {{name}} { get; set; }
-    {{/isEnum}}{{/vars}}
+        public {{{datatype}}}? {{name}} { get; set; }
+{{/isEnum}}{{/vars}}
+    
         /// <summary>
         /// Initializes a new instance of the <see cref="{{classname}}" /> class.
-        /// Initializes a new instance of the <see cref="{{classname}}" />class.
         /// </summary>
-{{#vars}}{{^isReadOnly}}        /// <param name="{{name}}">{{#description}}{{description}}{{/description}}{{^description}}{{name}}{{/description}}{{#required}} (required){{/required}}{{#defaultValue}} (default to {{defaultValue}}){{/defaultValue}}.</param>
+{{#vars}}{{^isReadOnly}}        
+		/// <param name="{{name}}">{{#description}}{{description}}{{/description}}{{^description}}{{name}}{{/description}}{{#required}} (required){{/required}}{{#defaultValue}} (default to {{defaultValue}}){{/defaultValue}}.</param>
 {{/isReadOnly}}{{/vars}}
-        public {{classname}}({{#vars}}{{^isReadOnly}}{{{datatypeWithEnum}}} {{name}} = null{{#hasMore}}, {{/hasMore}}{{/isReadOnly}}{{/vars}})
+
+        public {{classname}}({{#vars}}{{^isReadOnly}}{{{datatype}}}{{#isEnum}}?{{/isEnum}} {{name}} = null{{#hasMore}}, {{/hasMore}}{{/isReadOnly}}{{/vars}})
         {
             {{#vars}}{{^isReadOnly}}{{#required}}// to ensure "{{name}}" is required (not null)
             if ({{name}} == null)
@@ -61,14 +65,15 @@ namespace {{packageName}}.Model
             {{/defaultValue}}{{/required}}{{/isReadOnly}}{{/vars}}
         }
         
-    {{#vars}}{{^isEnum}}
+{{#vars}}{{^isEnum}}
         /// <summary>
         /// {{^description}}Gets or Sets {{{name}}}{{/description}}{{#description}}{{description}}{{/description}}
         /// </summary>{{#description}}
         /// <value>{{description}}</value>{{/description}}
         [DataMember(Name="{{baseName}}", EmitDefaultValue={{emitDefaultValue}})]
         public {{{datatype}}} {{name}} { get; {{#isReadOnly}}private {{/isReadOnly}}set; }
-    {{/isEnum}}{{/vars}}
+{{/isEnum}}{{/vars}}
+    
         /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
@@ -146,7 +151,10 @@ namespace {{packageName}}.Model
             }
         }
 
-    }
+    }  
+{{/isEnum}}
+      
+
 {{/model}}
 {{/models}}
 }

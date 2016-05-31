@@ -1,6 +1,7 @@
 public enum {{vendorExtensions.plainDatatypeWithEnum}} {
-            {{#allowableValues}}{{#enumVars}}
-            [EnumMember(Value = "{{jsonname}}")]
-            {{name}}{{^-last}},
-            {{/-last}}{{#-last}}{{/-last}}{{/enumVars}}{{/allowableValues}}
-        }
+	{{#allowableValues}}{{#enumVars}}
+		[EnumMember(Value = "{{jsonname}}")]
+		{{name}}{{^-last}},
+		{{/-last}}{{#-last}}{{/-last}}{{/enumVars}}
+	{{/allowableValues}}
+}

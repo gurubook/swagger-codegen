@@ -1,0 +1,6 @@
+public enum {{classname}} {
+{{#allowableValues}}
+	[EnumMember(Value = "{{.}}")]
+	{{.}}{{^-last}}, {{/-last}}
+{{/allowableValues}}
+	}
