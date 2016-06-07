@@ -108,11 +108,11 @@ namespace {{packageName}}.Client
             {
                 if (postBody.GetType() == typeof(String))
                 {
-                    request.AddParameter("application/json", postBody, ParameterType.RequestBody);
+                    request.AddParameter("body", System.Text.Encoding.UTF8.GetBytes((string)postBody), ParameterType.RequestBody, contentType);
                 }
                 else if (postBody.GetType() == typeof(byte[]))
                 {
-                    request.AddParameter(contentType, postBody, ParameterType.RequestBody);
+                    request.AddParameter("body", (byte[])postBody, ParameterType.RequestBody, contentType);
                 }
             }
     
