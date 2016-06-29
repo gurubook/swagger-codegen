@@ -1,14 +1,8 @@
 @ApiModel(description = "{{{description}}}")
 public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}} {
   {{#vars}}
-  {{#isEnum}}
   @SerializedName("{{baseName}}")
   private {{{datatype}}} {{name}} = {{{defaultValue}}};
-  {{/isEnum}}
-  {{^isEnum}}
-  @SerializedName("{{baseName}}")
-  private {{{datatype}}} {{name}} = {{{defaultValue}}};
-  {{/isEnum}}
   {{/vars}}
 
   {{#vars}}

@@ -1,13 +1,8 @@
 @ApiModel(description = "{{{description}}}")
 public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}} {
-  {{#vars}}{{#isEnum}}
-  public enum {{datatypeWithEnum}} {
-    {{#allowableValues}}{{#values}} {{.}}, {{/values}}{{/allowableValues}}
-  };
+
   @SerializedName("{{baseName}}")
-  private {{{datatypeWithEnum}}} {{name}} = {{{defaultValue}}};{{/isEnum}}{{^isEnum}}
-  @SerializedName("{{baseName}}")
-  private {{{datatype}}} {{name}} = {{{defaultValue}}};{{/isEnum}}{{/vars}}
+  private {{{datatype}}} {{name}} = {{{defaultValue}}};{{/vars}}
 
   {{#vars}}
   /**{{#description}}
@@ -16,10 +11,10 @@ public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}} {
    * maximum: {{maximum}}{{/maximum}}
    **/
   @ApiModelProperty({{#required}}required = {{required}}, {{/required}}value = "{{{description}}}")
-  public {{{datatypeWithEnum}}} {{getter}}() {
+  public {{{datatype}}} {{getter}}() {
     return {{name}};
   }
-  public void {{setter}}({{{datatypeWithEnum}}} {{name}}) {
+  public void {{setter}}({{{datatype}}} {{name}}) {
     this.{{name}} = {{name}};
   }
 

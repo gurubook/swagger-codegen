@@ -1,12 +1,8 @@
 {{#description}}@ApiModel(description = "{{{description}}}"){{/description}}
 public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}} {{#serializableModel}}implements Serializable{{/serializableModel}} {
-  {{#vars}}{{#isEnum}}
-
-{{>libraries/okhttp-gson/enumClass}}{{/isEnum}}{{#items.isEnum}}{{#items}}
-
-{{>libraries/okhttp-gson/enumClass}}{{/items}}{{/items.isEnum}}
+  {{#vars}}
   @SerializedName("{{baseName}}")
-  private {{{datatypeWithEnum}}} {{name}} = {{{defaultValue}}};
+  private {{{datatype}}} {{name}} = {{{defaultValue}}};
   {{/vars}}
 
   {{#vars}}
@@ -16,10 +12,10 @@ public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}} {{#seriali
    * maximum: {{maximum}}{{/maximum}}
    **/
   @ApiModelProperty({{#required}}required = {{required}}, {{/required}}value = "{{{description}}}")
-  public {{{datatypeWithEnum}}} {{getter}}() {
+  public {{{datatype}}} {{getter}}() {
     return {{name}};
   }{{^isReadOnly}}
-  public void {{setter}}({{{datatypeWithEnum}}} {{name}}) {
+  public void {{setter}}({{{datatype}}} {{name}}) {
     this.{{name}} = {{name}};
   }{{/isReadOnly}}
 
