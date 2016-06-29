@@ -3,7 +3,7 @@
 public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}} {{#serializableModel}}implements Serializable{{/serializableModel}} {
   {{#vars}}
 
-  private {{{datatypeWithEnum}}} {{name}} = {{{defaultValue}}};{{/vars}}
+  private {{{datatype}}} {{name}} = {{{defaultValue}}};{{/vars}}
 
   {{#vars}}{{^isReadOnly}}
   /**{{#description}}
@@ -11,7 +11,7 @@ public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}} {{#seriali
    * minimum: {{minimum}}{{/minimum}}{{#maximum}}
    * maximum: {{maximum}}{{/maximum}}
    **/
-  public {{classname}} {{name}}({{{datatypeWithEnum}}} {{name}}) {
+  public {{classname}} {{name}}({{{datatype}}} {{name}}) {
     this.{{name}} = {{name}};
     return this;
   }
@@ -19,10 +19,10 @@ public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}} {{#seriali
   {{vendorExtensions.extraAnnotation}}{{/vendorExtensions.extraAnnotation}}
   @ApiModelProperty({{#example}}example = "{{example}}", {{/example}}{{#required}}required = {{required}}, {{/required}}value = "{{{description}}}")
   @JsonProperty("{{baseName}}")
-  public {{{datatypeWithEnum}}} {{getter}}() {
+  public {{{datatype}}} {{getter}}() {
     return {{name}};
   }{{^isReadOnly}}
-  public void {{setter}}({{{datatypeWithEnum}}} {{name}}) {
+  public void {{setter}}({{{datatype}}} {{name}}) {
     this.{{name}} = {{name}};
   }{{/isReadOnly}}
 
