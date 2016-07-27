@@ -231,6 +231,18 @@ public class ApiClient {
   }
 
   /**
+   * Helper method to set API key for the selected API key authentication.
+   */
+  public void setAuthKeyValue(String authKey, String authValue){
+	  Authentication tmp = authentications.get(authKey);
+	  if (null != tmp && tmp instanceof ApiKeyAuth) {
+		  ((ApiKeyAuth) tmp).setApiKey(authValue);
+		  return;
+	  }
+	  throw new RuntimeException("authKey "+authKey+ " not found");
+  }
+
+  /**
    * Helper method to set access token for the first OAuth2 authentication.
    */
   public void setAccessToken(String accessToken) {
